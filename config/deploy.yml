@@ -1,0 +1,84 @@
+# Kamal 2 deployment configuration
+# Docs: https://kamal-deploy.org
+#
+# Before first deploy:
+#   1. Replace YOUR_DOCKER_USERNAME, YOUR_SERVER_IP, yourdomain.com
+#   2. Copy .kamal/secrets.example → .kamal/secrets and fill in values
+#   3. kamal setup     (installs Docker on server, sets up proxy)
+#   4. kamal deploy    (builds image, pushes, starts containers)
+#
+# Subsequent deploys: kamal deploy
+
+service: checkers
+image: YOUR_DOCKER_USERNAME/checkers
+
+servers:
+  web:
+    hosts:
+      - YOUR_SERVER_IP
+
+# Kamal proxy handles SSL termination (Let's Encrypt) on port 80/443
+proxy:
+  ssl: true
+  host: yourdomain.com
+  # Reverb WebSocket is proxied internally via Nginx — no separate port needed
+
+registry:
+  username: YOUR_DOCKER_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Build args — VITE_ vars are baked into the JS bundle at build time
+builder:
+  multiarch: false
+  args:
+    VITE_APP_NAME: Checkers
+    VITE_REVERB_APP_KEY: checkers-app
+    VITE_REVERB_HOST: yourdomain.com
+    VITE_REVERB_SCHEME: https
+    VITE_REVERB_PORT: "443"
+
+env:
+  clear:
+    APP_NAME: Checkers
+    APP_ENV: production
+    APP_DEBUG: false
+    APP_URL: https://yourdomain.com
+    LOG_CHANNEL: stderr
+    LOG_LEVEL: warning
+    # Database
+    DB_CONNECTION: pgsql
+    DB_HOST: 127.0.0.1
+    DB_PORT: 5432
+    DB_DATABASE: checkers
+    DB_USERNAME: checkers
+    # Broadcasting / Queue / Cache
+    BROADCAST_CONNECTION: reverb
+    QUEUE_CONNECTION: database
+    CACHE_STORE: database
+    SESSION_DRIVER: database
+    # Reverb (server-side)
+    REVERB_APP_ID: "1"
+    REVERB_APP_KEY: checkers-app
+    REVERB_HOST: yourdomain.com
+    REVERB_SCHEME: https
+    REVERB_PORT: "443"
+  secret:
+    - APP_KEY
+    - DB_PASSWORD
+    - REVERB_APP_SECRET
+
+# PostgreSQL — runs on the same server, port only accessible locally
+accessories:
+  db:
+    image: postgres:16-alpine
+    host: YOUR_SERVER_IP
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_DB: checkers
+        POSTGRES_USER: checkers
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - postgres_data:/var/lib/postgresql/data
