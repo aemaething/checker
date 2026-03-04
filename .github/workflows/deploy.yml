@@ -40,7 +40,7 @@ jobs:
           build-args: |
             VITE_APP_NAME=Checkers
             VITE_REVERB_APP_KEY=checkers-app
-            VITE_REVERB_HOST=checkers.robotnik.net
+            VITE_REVERB_HOST=${{ vars.DOMAIN }}
             VITE_REVERB_SCHEME=https
             VITE_REVERB_PORT=443
 
@@ -73,7 +73,7 @@ jobs:
             -i "${{ vars.SERVER_IP }}," \
             ansible/deploy.yml \
             --private-key ~/.ssh/deploy_key \
-            --extra-vars "ansible_user=root app_key='${{ secrets.APP_KEY }}' db_password='${{ secrets.DB_PASSWORD }}' reverb_app_secret='${{ secrets.REVERB_APP_SECRET }}' ghcr_token='${{ secrets.GHCR_TOKEN }}'" \
+            --extra-vars "ansible_user=root domain='${{ vars.DOMAIN }}' app_key='${{ secrets.APP_KEY }}' db_password='${{ secrets.DB_PASSWORD }}' reverb_app_secret='${{ secrets.REVERB_APP_SECRET }}' ghcr_token='${{ secrets.GHCR_TOKEN }}'" \
             -v
 
       - name: Cleanup SSH key
