@@ -1,3 +1,0 @@
-checkers.robotnik.net {
-    reverse_proxy web:80
-}
