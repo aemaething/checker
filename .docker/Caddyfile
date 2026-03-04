@@ -1,0 +1,20 @@
+{
+    frankenphp
+    admin off
+}
+
+:80 {
+    root * /var/www/html/public
+
+    # WebSocket proxy to Reverb
+    handle /app/* {
+        reverse_proxy 127.0.0.1:8080
+    }
+
+    handle /apps/* {
+        reverse_proxy 127.0.0.1:8080
+    }
+
+    encode gzip
+    php_server
+}

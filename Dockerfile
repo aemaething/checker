@@ -28,24 +28,14 @@ RUN composer install \
 COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
-# ── Stage 3: Production image ─────────────────────────────────────────────────
-FROM php:8.3-fpm-alpine
+# ── Stage 3: Production image ──────────────────────────────────────────────────
+FROM dunglas/frankenphp:php8.3-alpine
 
-# Runtime libs
-RUN apk add --no-cache nginx supervisor libpq libzip
+# PHP extensions
+RUN install-php-extensions pdo_pgsql pgsql pcntl zip opcache
 
-# PHP extensions (build deps removed afterwards)
-RUN apk add --no-cache --virtual .build-deps \
-        postgresql-dev \
-        libzip-dev \
-        oniguruma-dev \
-    && docker-php-ext-install \
-        pdo_pgsql \
-        pgsql \
-        pcntl \
-        zip \
-        opcache \
-    && apk del .build-deps
+# supervisord
+RUN apk add --no-cache supervisor
 
 WORKDIR /var/www/html
 
@@ -54,7 +44,7 @@ COPY --from=vendor /app .
 COPY --from=frontend /app/public/build ./public/build
 
 # Docker configs
-COPY .docker/nginx.conf /etc/nginx/nginx.conf
+COPY .docker/Caddyfile /etc/caddy/Caddyfile
 COPY .docker/supervisord.conf /etc/supervisord.conf
 COPY .docker/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY .docker/entrypoint.sh /entrypoint.sh
