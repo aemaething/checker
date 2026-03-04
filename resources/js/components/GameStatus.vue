@@ -63,25 +63,25 @@ async function copyShareLink(): Promise<void> {
         </div>
 
         <!-- Player info -->
-        <div class="text-sm text-slate-500">
+        <div class="text-sm text-zinc-500">
             Du spielst als
-            <span class="font-medium" :class="game.player_number === 1 ? 'text-gray-900' : 'text-slate-500'">
+            <span class="font-medium" :class="game.player_number === 1 ? 'text-zinc-900' : 'text-zinc-600'">
                 Spieler {{ game.player_number }}
                 {{ game.player_number === 1 ? '(Schwarz)' : '(Grau)' }}
             </span>
         </div>
 
         <!-- Share link for player 1 while waiting -->
-        <div v-if="game.share_url && game.status === 'waiting'" class="rounded-lg border border-amber-200 bg-amber-50 p-3">
-            <p class="mb-2 text-sm font-medium text-amber-800">Link für Mitspieler:</p>
+        <div v-if="game.share_url && game.status === 'waiting'" class="rounded-lg border border-zinc-300 bg-zinc-50 p-3">
+            <p class="mb-2 text-sm font-medium text-zinc-700">Link für Mitspieler:</p>
             <div class="flex gap-2">
                 <input
                     :value="game.share_url"
                     readonly
-                    class="min-w-0 flex-1 rounded border border-amber-200 bg-white px-2 py-1 text-xs text-slate-600"
+                    class="min-w-0 flex-1 rounded border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-600"
                 />
                 <button
-                    class="rounded bg-amber-700 px-3 py-1 text-xs text-white transition hover:bg-amber-800"
+                    class="rounded bg-zinc-800 px-3 py-1 text-xs text-white transition hover:bg-zinc-700"
                     @click="copyShareLink"
                 >
                     {{ copied ? 'Kopiert!' : 'Kopieren' }}
