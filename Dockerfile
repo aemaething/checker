@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --prefer-offline
 COPY . .
-RUN npm run build
+RUN WAYFINDER_SKIP=1 npm run build
 
 # ── Stage 2: PHP dependencies ─────────────────────────────────────────────────
 FROM composer:2 AS vendor

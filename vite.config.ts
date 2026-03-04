@@ -20,8 +20,6 @@ export default defineConfig({
                 },
             },
         }),
-        wayfinder({
-            formVariants: true,
-        }),
+        ...(process.env.WAYFINDER_SKIP ? [] : [wayfinder({ formVariants: true })]),
     ],
 });
